@@ -1,5 +1,7 @@
 ﻿using FinanceTransactionApi.Models;
 using FinanceTransactionApi.Services.Interfaces;
+using FinanceTransactionApi.Services.Validators;
+using FinanceTransactionApi.Services.Validators.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinanceTransactionApi.Controllers
@@ -17,43 +19,38 @@ namespace FinanceTransactionApi.Controllers
         /// </summary>
         private readonly IFinancialDocumentService _financialDocumentService;
         /// <summary>
-        /// The product service
+        /// The financial document validator
         /// </summary>
-        private readonly IProductService _productService;
-        /// <summary>
-        /// The tenant service
-        /// </summary>
-        private readonly ITenantService _tenantService;
-        /// <summary>
-        /// The client service
-        /// </summary>
-        private readonly IClientService _clientService;
+        private readonly IFinanceDocumentValidationService _financialDocumentValidator;
+
         /// <summary>
         /// The client information service
         /// </summary>
         private readonly IClientInfoService _clientInfoService;
+        /// <summary>
+        /// The client service
+        /// </summary>
+        private readonly IClientService _clientService;
+
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FinancialDocumentController"/> class.
+        /// Initializes a new instance of the <see cref="FinancialDocumentController" /> class.
         /// </summary>
         /// <param name="financialDocumentService">The financial document service.</param>
-        /// <param name="productService">The product service.</param>
-        /// <param name="tenantService">The tenant service.</param>
-        /// <param name="clientService">The client service.</param>
+        /// <param name="financeDocumentValidationService">The finance document validation service.</param>
         /// <param name="clientInfoService">The client information service.</param>
+        /// <param name="clientService">The client service.</param>
         public FinancialDocumentController(
         IFinancialDocumentService financialDocumentService,
-        IProductService productService,
-        ITenantService tenantService,
-        IClientService clientService,
-        IClientInfoService clientInfoService
+        IFinanceDocumentValidationService financeDocumentValidationService,
+        IClientInfoService clientInfoService,
+        IClientService clientService
         )
         {
             _financialDocumentService = financialDocumentService;
-            _productService = productService;
-            _tenantService = tenantService;
-            _clientService = clientService;
+            _financialDocumentValidator = financeDocumentValidationService;
             _clientInfoService = clientInfoService;
+            _clientService = clientService;
         }
 
 
@@ -67,54 +64,45 @@ namespace FinanceTransactionApi.Controllers
         {
             try
             {
-                // Validate the request model
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
 
-                // Validate product code
-                if (!_productService.IsProductValid(request.ProductCode))
+                if (!_financialDocumentValidator.ValidateProductCode(request.ProductCode))
                 {
-                    return StatusCode(403, "Product is not valid!");
+                    return BadRequest(request.ProductCode + " is not a valid product code");
                 }
 
-                // Validate tenant ID
-                if (!_tenantService.IsTenantWhiteListed(request.TenantId))
+                if (!_financialDocumentValidator.ValidateTenant(request.TenantId))
                 {
-                    return StatusCode(403, "Tenant not whitelisted");
+                    return Unauthorized("Tenant is not whitelisted");
                 }
 
-                // Get client information and check whitelisting
                 var clientInfo = _clientService.GetClientDetails(request.TenantId, request.DocumentId);
                 if (clientInfo == null)
                 {
-                    return StatusCode(403, "Bad client info!");
+                    return NotFound("Client not found");
                 }
 
-                if(!_clientService.IsClientWhiteListed(request.TenantId, clientInfo.ClientId))
+                if (!_financialDocumentValidator.ValidateClientWhiteListing(request.TenantId, clientInfo.ClientId))
                 {
-                    return StatusCode(403, "Client not whitelisted");
+                    return Forbid("Client is not whitelisted");
                 }
 
-                // Fetch additional client information
                 var additionalInfo = _clientInfoService.GetAditionalInfo(clientInfo.ClientVAT);
 
-                // Check company type
-                if (additionalInfo.companyType == CompanyType.Small)
+                if (!_financialDocumentValidator.ValidateCompanyType(additionalInfo.companyType))
                 {
-                    return StatusCode(403, "Company type is small");
+                    return Forbid("Company type is small");
                 }
 
-                // Retrieve financial document
                 var financialDocument = _financialDocumentService.GetFinancialDocument(request.TenantId, request.DocumentId, request.ProductCode);
-
-                if(financialDocument == null)
+                if (financialDocument == null)
                 {
-                    return StatusCode(403, "Product code is not valid with Document!");
+                    return NotFound("Financial document not found");
                 }
 
-                // Enrich response model
                 var enrichedResponse = new FinancialDataResponse
                 {
                     Data = new FinanceDocumentResponse

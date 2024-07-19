@@ -11,7 +11,7 @@
         /// <value>
         /// The product code.
         /// </value>
-        public string? ProductCode { get; set; }
+        public string ProductCode { get; set; }
         /// <summary>
         /// Gets or sets the tenant identifier.
         /// </summary>

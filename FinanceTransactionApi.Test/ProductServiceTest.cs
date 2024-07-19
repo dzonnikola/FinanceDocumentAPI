@@ -1,4 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FinanceTransactionApi.Models;
+using FinanceTransactionApi.Repositories;
+using FinanceTransactionApi.Services;
+using FinanceTransactionApi.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
 
 namespace FinanceTransactionApi.Test
 {
@@ -6,30 +11,36 @@ namespace FinanceTransactionApi.Test
     {
         private ProductService _productService;
         private FinanceDbContext _testFinanceDbContext;
+        private IProductRepository _productRepository;
 
         [OneTimeSetUp]
         public void Setup()
         {
-            var options = new DbContextOptionsBuilder<FinanceDbContext>().
-                UseInMemoryDatabase(databaseName: "TestFinanceDb")
+            // Set up in-memory database
+            var options = new DbContextOptionsBuilder<FinanceDbContext>()
+                .UseInMemoryDatabase(databaseName: "TestFinanceDb")
                 .Options;
 
             _testFinanceDbContext = new FinanceDbContext(options);
 
-            DataStorage.PopulateProductData(_testFinanceDbContext);
-            _productService = new ProductService(_testFinanceDbContext);
+            // Initialize repositories
+            _productRepository = new ProductRepository(_testFinanceDbContext);
 
+            // Populate database with test data
+            DataStorage.PopulateProductData(_testFinanceDbContext);
+
+            // Initialize service
+            _productService = new ProductService(_productRepository);
         }
 
         [Test]
         public void IsProductValid_ValidProduct_ReturnsTrue()
         {
-            //Act
+            // Act
             var result = _productService.IsProductValid("ProductA");
 
-            //Assert
-            Assert.IsTrue(result);
-
+            // Assert
+            Assert.IsTrue(result, "Valid product should return true");
         }
 
         [Test]
@@ -38,9 +49,8 @@ namespace FinanceTransactionApi.Test
             // Act
             var result = _productService.IsProductValid("ProductD");
 
-            //Assert
-            Assert.IsFalse(result);
-
+            // Assert
+            Assert.IsFalse(result, "Invalid product should return false");
         }
 
         [Test]
@@ -50,7 +60,7 @@ namespace FinanceTransactionApi.Test
             var result = _productService.IsProductValid("");
 
             // Assert
-            Assert.IsFalse(result);
+            Assert.IsFalse(result, "Empty product code should return false");
         }
 
         [Test]
@@ -60,9 +70,7 @@ namespace FinanceTransactionApi.Test
             var result = _productService.IsProductValid(null);
 
             // Assert
-            Assert.IsFalse(result);
+            Assert.IsFalse(result, "Null product code should return false");
         }
     }
-
-
 }

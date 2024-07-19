@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinanceTransactionApi", "FinanceTransactionApi\FinanceTransactionApi.csproj", "{6E2F595E-8E29-47C0-8162-382C42C02D73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinanceTransactionApi.Test", "FinanceTransactionApi.Test\FinanceTransactionApi.Test.csproj", "{179D8B5B-1B9A-46B9-8BA7-9B7BF83DB7C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinanceTransactionApi.Test", "FinanceTransactionApi.Test\FinanceTransactionApi.Test.csproj", "{179D8B5B-1B9A-46B9-8BA7-9B7BF83DB7C6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0D340967-8B60-417F-B9E6-350FC74135D5}"
 	ProjectSection(SolutionItems) = preProject

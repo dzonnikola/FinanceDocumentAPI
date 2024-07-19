@@ -34,21 +34,21 @@ namespace FinanceTransactionApi.Models
         /// <value>
         /// The currency.
         /// </value>
-        public string? Currency { get; set; }
+        public string Currency { get; set; }
         /// <summary>
         /// Gets or sets the product code.
         /// </summary>
         /// <value>
         /// The product code.
         /// </value>
-        public string? ProductCode { get; set; }
+        public string ProductCode { get; set; }
         /// <summary>
         /// Gets or sets the transactions.
         /// </summary>
         /// <value>
         /// The transactions.
         /// </value>
-        public ICollection<Transaction>? Transactions { get; set; }
+        public ICollection<Transaction> Transactions { get; set; }
         /// <summary>
         /// Gets or sets the client identifier.
         /// </summary>

@@ -3,6 +3,9 @@ using FinanceTransactionApi.Services.Interfaces;
 using FinanceTransactionApi.Services;
 using FinanceTransactionApi.FinanceContext;
 using Microsoft.EntityFrameworkCore;
+using FinanceTransactionApi.Services.Validators;
+using FinanceTransactionApi.Services.Validators.Interfaces;
+using FinanceTransactionApi.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,14 +15,19 @@ builder.Services.AddDbContext<FinanceDbContext>(options =>
 });
 
 builder.Services.AddScoped<DataStorage>();
+
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ITenantRepository, TenantRepository>();
 builder.Services.AddScoped<ITenantService, TenantService>();
-builder.Services.AddScoped<IClientService, ClientService>();
-builder.Services.AddScoped<IClientInfoService, ClientInfoService>();
-builder.Services.AddScoped<ICompanyTypeCheck, CompanyTypeService>();
+builder.Services.AddScoped<IClientRepository, ClientRepository>();
+builder.Services.AddScoped< IClientService, ClientService>();
+builder.Services.AddScoped<IFinancialDocumentRepository, FinancialDocumentRepository>();
 builder.Services.AddScoped<IFinancialDocumentService, FinancialDocumentService>();
 builder.Services.AddScoped<IClientInfoService, ClientInfoService>();
+builder.Services.AddScoped<ICompanyTypeCheck, CompanyTypeService>();
 builder.Services.AddScoped<IAnonymizationService, AnonymizationService>();
+builder.Services.AddScoped<IFinanceDocumentValidationService, FinanceDocumentValidationService>();
 
 
 using (var scope = builder.Services.BuildServiceProvider().CreateScope())

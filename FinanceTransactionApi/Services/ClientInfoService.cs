@@ -6,16 +6,17 @@ namespace FinanceTransactionApi.Services
 {
     public class ClientInfoService : IClientInfoService
     {
-        private readonly FinanceDbContext _dbContext;
+        
+        private readonly IClientRepository _clientRepository;
 
-        public ClientInfoService(FinanceDbContext dbContext)
+        public ClientInfoService(IClientRepository clientRepository)
         {
-            _dbContext = dbContext;
+            _clientRepository = clientRepository;
         }
 
         public (string RegistrationNumber, CompanyType companyType) GetAditionalInfo(string clientVAT)
         {
-            var client = _dbContext.Clients.FirstOrDefault(c => c.ClientVAT == clientVAT);
+            var client = _clientRepository.GetClient(clientVAT);
             if (client != null)
             {
                 return (client.RegistrationNumber, client.CompanyType);

@@ -6,20 +6,20 @@ namespace FinanceTransactionApi.Services
 {
     public class ClientService : IClientService
     {
-        private readonly FinanceDbContext _dbContext;
+        private readonly IClientRepository _clientRepository;
 
-        public ClientService(FinanceDbContext dbContext)
+        public ClientService(IClientRepository clientRepository)
         {
-            _dbContext = dbContext;
+            _clientRepository = clientRepository;
         }
 
         public Client GetClientDetails(Guid tenantId, Guid documentId)
         {
-            return _dbContext.Clients.FirstOrDefault(c => c.TenantId == tenantId && c.DocumentId == documentId);
+            return _clientRepository.GetClient(tenantId, documentId);
         }
         public bool IsClientWhiteListed(Guid tenantId, int clientId)
         {
-            return _dbContext.Clients.Any(c => c.TenantId == tenantId && c.ClientId == clientId && c.IsWhiteListed);
+            return _clientRepository.CheckWhiteList(tenantId, clientId);
         }
     }
 }

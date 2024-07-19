@@ -11,7 +11,7 @@
         /// <value>
         /// The account number.
         /// </value>
-        public string? AccountNumber { get; set; }
+        public string AccountNumber { get; set; }
         /// <summary>
         /// Gets or sets the balance.
         /// </summary>
@@ -25,13 +25,13 @@
         /// <value>
         /// The currency.
         /// </value>
-        public string? Currency { get; set; }
+        public string Currency { get; set; }
         /// <summary>
         /// Gets or sets the transactions.
         /// </summary>
         /// <value>
         /// The transactions.
         /// </value>
-        public ICollection<Transaction>? Transactions { get; set; }
+        public ICollection<Transaction> Transactions { get; set; }
     }
 }

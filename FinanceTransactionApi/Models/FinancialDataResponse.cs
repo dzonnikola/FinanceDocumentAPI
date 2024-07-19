@@ -13,13 +13,13 @@ namespace FinanceTransactionApi.Models
         /// <value>
         /// The data.
         /// </value>
-        public FinanceDocumentResponse? Data { get; set; }
+        public FinanceDocumentResponse Data { get; set; }
         /// <summary>
         /// Gets or sets the company.
         /// </summary>
         /// <value>
         /// The company.
         /// </value>
-        public CompanyResponse? Company { get; set; }
+        public CompanyResponse Company { get; set; }
     }
 }

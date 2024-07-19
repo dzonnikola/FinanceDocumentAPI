@@ -7,22 +7,17 @@ namespace FinanceTransactionApi.Services
 {
     public class ProductService : IProductService
     {
-        private readonly FinanceDbContext _dbContext;
-        public ProductService(FinanceDbContext dbContext)
+        private readonly IProductRepository _productRepository;
+
+        public ProductService(IProductRepository productRepository)
         {
-            _dbContext = dbContext;
+            _productRepository = productRepository;
         }
 
         public bool IsProductValid(string productCode)
         {
-            var product = _dbContext.Products.FirstOrDefault(p => p.ProductCode == productCode);
-
-            if (product == null)
-            {
-                return false;
-            }
-
-            return product.IsSupported;
+            var product = _productRepository.GetProductByCode(productCode);
+            return product != null && product.IsSupported;
         }
     }
 }
